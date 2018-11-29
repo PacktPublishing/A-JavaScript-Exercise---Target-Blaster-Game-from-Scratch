@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Exercise JavaScript Game</title>
+    <style>
+        .container {
+            height: 90vh;
+            position: relative;
+            background-color: dimgray;
+            width: 90%;
+            left: 5%;
+            margin-top: 10px;
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        .crossHair {
+            position: absolute;
+            height: 100px;
+            width: 100px;
+            left: 10%;
+            bottom: 10%;
+            border: 1px solid black;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+        
+        .crossInfo {
+            position: absolute;
+            height: 20%;
+            width: 60%;
+            margin-left: 20%;
+            background-color: black;
+            color: white;
+            font-size: 0.6em;
+            text-align: center;
+            line-height: 20px;
+            bottom: 0;
+        }
+        
+        .score {
+            font-size: 3em;
+        }
+        
+        .btnStart {
+            display: inline-block;
+            padding: 15px;
+            border: 1px solid black;
+            background-color: red;
+            color: white;
+            font-size: 2em;
+        }
+        
+        .baddy {
+            position: absolute;
+            top: 250px;
+            left: 100px;
+            width: 100px;
+            height: 100px;
+            padding: 5px;
+            background-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 1px 8px 0px black;
+            border-radius: 50px;
+            text-align: center;
+            z-index: 2;
+        }
+                .gameover {
+            position: absolute;
+            text-align: center;
+            color: white;
+            font-size: 3em;
+            line-height: 300px;
+            text-transform: uppercase;
+            width: 100%
+        }
+    </style>
+</head>
+
+<body>
+    <div class="headerInfo">
+        <div class="btnStart">Start Game</div> Score : <span class="score">0</span> </div>
+    <div class="container">
+        <div class="gameover">Click Start Button</div>
+        <div class="crossHair">
+            <div class="crossInfo"></div>
+        </div>
+    </div>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js" integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+" crossorigin="anonymous"></script>
+    <script>
+        var icons = ["bath", "bug", "bowling-ball", "coffee", "couch", "football-ball", "gem", "laptop"];
+        var score;
+        var gameplay;
+        var reqUpdate;
+        var mDown = false;
+        var BGcount ;
+        var hazards;
+        var container = document.querySelector('.container');
+        var crossHair = document.querySelector('.crossHair');
+        var gameover= document.querySelector('.gameover');
+        var baddy = document.querySelector('.baddy');
+        var btnStart = document.querySelector('.btnStart');
+        var myContainer = {
+            width: container.offsetWidth
+            , height: container.offsetHeight
+            , left: container.offsetLeft
+            , top: container.offsetTop
+        }
+        container.addEventListener('mousedown', function () {
+            mDown = true;
+        }, true);
+        container.addEventListener('mouseup', function () {
+            mDown = false;
+        }, true);
+        container.addEventListener('mousemove', move, true);
+        btnStart.addEventListener('click', startGame);
+
+        function startGame() {
+            if (!gameplay) {
+                BGcount = 100;
+                score = 0;
+                hazards = 3;
+                setupBadguys(6);
+                gameplay = true;
+                gameover.style.display = 'none';
+                reqUpdate = window.requestAnimationFrame(update);
+            }
+        }
+
+        function endGame(){
+            gameover.style.display = 'block';
+            gameover.innerHTML = 'GAME OVER <br>SCORE '+score;
+            gameplay = false;
+            var tempEnemy = document.querySelectorAll('.baddy');
+            for (var e of tempEnemy) {
+                 e.parentNode.removeChild(e);
+            }
+        }
+        
+        function setupBadguys(num) {
+            for (var x = 0; x < num; x++) {
+                badMaker();
+            }
+        }
+
+        function randomColor() {
+            function c() {
+                var hex = Math.floor(Math.random() * 256).toString(16);
+                var response = ("0" + String(hex)).substr(-2);
+                return response;
+            }
+            return '#' + c() + c() + c();
+            //console.log('#'+c()+c()+c());
+        }
+
+        function badMaker() {
+            var div = document.createElement('div');
+            var randomWidth ;
+            var iconRan;
+            if(hazards>0){
+                hazards--;
+                iconRan = "fa-bomb";
+                div.dataset.points =0 ;
+                div.style.color='white';
+                div.style.backgroundColor = 'black';
+                randomWidth =150;
+            }else{
+                iconRan = "fa-" + icons[Math.floor(Math.random() * (icons.length))];
+                div.dataset.points = Math.ceil(Math.random() * 10) + 2;
+                randomWidth = Math.floor(Math.random() * 50) + 50;
+                div.style.color = randomColor();
+            }
+            
+            
+            
+            var x = Math.floor(Math.random() * (myContainer.width - randomWidth));
+            var y = Math.floor(Math.random() * (myContainer.height - randomWidth));
+            div.innerHTML = '<i class="fas ' + iconRan + '"></i>';
+            div.setAttribute('class', 'baddy');
+            
+            div.dataset.speed = Math.ceil(Math.random() * 10) + 2;
+            div.dataset.dir = Math.ceil(Math.random() * 8);
+            div.dataset.mover = Math.ceil(Math.random() * 15) + 2;
+            div.style.fontSize = randomWidth + 'px';
+            div.style.lineHeight = randomWidth - (randomWidth * 0.3) + 'px';
+            div.style.height = randomWidth + 'px';
+            
+            div.style.left = x + 'px';
+            div.style.top = y + 'px';
+            container.appendChild(div);
+        }
+
+        function update() {
+            if (!gameplay) {
+                window.cancelAnimationFrame(reqUpdate);
+            }
+            else {
+                reqUpdate = window.requestAnimationFrame(update);
+            }
+            var tempEnemy = document.querySelectorAll('.baddy');
+            for (var enemy of tempEnemy) {
+                itemMover(enemy);
+            }
+        }
+
+        function scoreUpdate(points) {
+            score += parseInt(points);
+            document.querySelector('.score').innerText = score;
+        }
+
+        function itemMover(e) {
+            //
+            if (mDown && isCollision(crossHair, e)) {
+                if(e.dataset.points ==0){
+                    endGame();
+                    return;
+                }
+                e.parentNode.removeChild(e);
+                badMaker();
+                BGcount--;
+                scoreUpdate(e.dataset.points);
+                if(BGcount<0) endGame();
+                return;
+            }
+            var x = parseInt(e.style.left);
+            var y = parseInt(e.style.top);
+            var sp = parseInt(e.dataset.speed);
+            if (e.dataset.mover <= 0) {
+                e.dataset.speed = Math.ceil(Math.random() * 10) + 2;
+                e.dataset.dir = Math.ceil(Math.random() * 8);
+                e.dataset.mover = Math.ceil(Math.random() * 15) + 2;
+            }
+            else {
+                e.dataset.mover--;
+                if ((e.dataset.dir == '1'  || e.dataset.dir == '2' || e.dataset.dir == '8' ) && x < myContainer.width) {
+                    x += sp;
+                } //right
+                if ((e.dataset.dir == '4' || e.dataset.dir == '5' || e.dataset.dir == '6' ) && x > 0) {
+                    x -= sp;
+                } //left
+                if ((e.dataset.dir == '3' || e.dataset.dir == '2' || e.dataset.dir == '4' ) && y < myContainer.height) {
+                    y += sp;
+                } //down
+                if ((e.dataset.dir == '7' || e.dataset.dir == '6' || e.dataset.dir == '8' ) && y > 0) {
+                    y -= sp;
+                } //up
+            }
+            e.style.left = x + 'px';
+            e.style.top = y + 'px';
+        }
+
+        function isCollision(a, b) {
+            var aRect = a.getBoundingClientRect();
+            var bRect = b.getBoundingClientRect();
+            return !(
+                ((aRect.top + aRect.height) < bRect.top) || ((bRect.top + bRect.height) < aRect.top) || ((aRect.left + aRect.width) < bRect.left) || ((bRect.left + bRect.width) < aRect.left))
+        }
+
+        function move(e) {
+            document.querySelector('.crossInfo').innerHTML = 'X:' + (e.clientX - 50) + '- Y:' + (e.clientY - 50);
+            crossHair.style.left = (e.clientX - 100) + 'px';
+            crossHair.style.top = (e.clientY - 100) + 'px';
+        }
+    </script>
+</body>
+
+</html>

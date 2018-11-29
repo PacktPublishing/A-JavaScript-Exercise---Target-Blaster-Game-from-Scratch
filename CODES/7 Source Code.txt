@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Create Elements JavaScript</title>
+    <style>
+        .btn,
+        .btn1,
+        .btn2 {
+            border: 1px solid black;
+            padding: 10px;
+            display: inline-block;
+            font-size: 3em;
+        }
+        
+        .box {
+            background-color: red;
+            display: block;
+            position: absolute;
+            left: 50px;
+            top: 150px;
+            height: 100px;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">Output</div>
+    <div class="btn">Start</div>
+    <div class="btn2">Rev</div>
+    <div class="btn1">Stop</div>
+    <script>
+        var btnClick = document.querySelector('.btn');
+        var btnClick1 = document.querySelector('.btn1');
+        var btnClick2 = document.querySelector('.btn2');
+        var boxElement = document.querySelector('.box');
+        var animateMe;
+        var moveValue = 5;
+        var counter = 1;
+        btnClick.addEventListener('click', actionForClick);
+        btnClick1.addEventListener('click', stopMeFromMoving);
+        btnClick2.addEventListener('click', function(){
+               moveValue=moveValue*-1;
+        });
+        function actionForClick(e) {
+            var x = boxElement.offsetLeft;
+            console.log(x);
+            counter++;
+            boxElement.style.left = (x + moveValue) + 'px';
+            if (counter < 100) {
+                animateMe = window.requestAnimationFrame(actionForClick);
+            }
+            else {
+                cancelAnimationFrame(animateMe);
+            }
+        }
+        function stopMeFromMoving() {
+            counter = 10;
+            cancelAnimationFrame(animateMe);
+        }
+        function ranReturn(num) {
+            return Math.ceil(Math.random() * num);
+        }
+        function randomColor() {
+            function c() {
+                var hex = ranReturn(256).toString(16);
+                return ("0" + String(hex)).substr(-2);
+            }
+            return "#" + c() + c() + c();
+        }
+    </script>
+</body>
+</html>

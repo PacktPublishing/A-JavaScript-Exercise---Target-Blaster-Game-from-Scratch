@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Create Elements JavaScript</title>
+    <style>
+        .btn {
+            border: 1px solid black;
+            padding: 10px;
+            display: inline-block;
+            font-size: 3em;
+        }
+        
+        .box {
+            background-color: red;
+            display: block;
+            position: absolute;
+            left: 50px;
+            top: 150px;
+            height: 100px;
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="output"></div>
+    <div class="btn">Click Me</div>
+    <script>
+        var btnClick = document.querySelector('.btn');
+        console.log(btnClick);
+        var counter = 1;
+        btnClick.addEventListener('click', actionForClick);
+
+        function actionForClick(e) {
+            var div = document.createElement('div');
+            var output = document.querySelector('.output');
+            div.setAttribute('class','box');
+            div.style.left = ranReturn(200) + 'px';
+            div.style.top =ranReturn(200) + 'px';
+            div.style.height = ranReturn(200) + 'px';
+            div.style.width = ranReturn(300) + 'px';
+            div.style.backgroundColor =  randomColor();
+            div.style.color = randomColor();
+            div.innerHTML = "Box#"+counter;
+            div.dataset.test = 'Testing this thing '+counter;
+            console.log(div);
+            output.appendChild(div);
+            counter++;
+        }
+        
+        function ranReturn(num){
+            return Math.ceil(Math.random()*num);   
+        }
+        
+        function randomColor(){
+            function c(){
+                var hex =  ranReturn(256).toString(16);
+                return ("0"+String(hex)).substr(-2);
+            }
+            return "#" +c()+c()+c();   
+        }
+        
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Exercise JavaScript Game</title>
+    <style>
+        .container {
+            height: 90vh;
+            position: relative;
+            background-color: dimgray;
+            width: 90%;
+            left: 5%;
+            margin-top: 10px;
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        .crossHair {
+            position: absolute;
+            height: 100px;
+            width: 100px;
+            left: 10%;
+            bottom: 10%;
+            border: 1px solid black;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+        
+        .crossInfo {
+            position: absolute;
+            height: 20%;
+            width: 60%;
+            margin-left: 20%;
+            background-color: black;
+            color: white;
+            font-size: 0.6em;
+            text-align: center;
+            line-height: 20px;
+            bottom: 0;
+        }
+        
+        .score {
+            font-size: 3em;
+        }
+        
+        .btnStart {
+            display: inline-block;
+            padding: 15px;
+            border: 1px solid black;
+            background-color: red;
+            color: white;
+            font-size: 2em;
+        }
+        
+        .baddy {
+            position: absolute;
+            top: 250px;
+            left: 100px;
+            width: 100px;
+            height: 100px;
+            padding: 4px;
+            background-color: red;
+            box-shadow: 0px 1px 8px 0px black;
+            border-radius: 50px;
+            text-align: center;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="headerInfo">
+        <div class="btnStart">Start Game</div> Score : <span class="score">0</span> </div>
+    <div class="container">
+        <div class="baddy"></div>
+        <div class="crossHair">
+            <div class="crossInfo"></div>
+        </div>
+    </div>
+    <script>
+        var score;
+        var gameplay;
+        var reqUpdate;
+        var container = document.querySelector('.container');
+        var crossHair = document.querySelector('.crossHair');
+        var baddy = document.querySelector('.baddy');
+        var btnStart = document.querySelector('.btnStart');
+        container.addEventListener('mousemove', move, true);
+        btnStart.addEventListener('click', startGame);
+        function startGame() {
+            if (!gameplay) {
+                score = 0;
+                gameplay = true;
+                reqUpdate = window.requestAnimationFrame(update);
+            }
+        }
+        function update() {
+            //gameplay loop
+            //console.log('Game in play');
+            console.log(isCollision(crossHair, baddy));
+            if (!gameplay) {
+                window.cancelAnimationFrame(reqUpdate);
+            }
+            else {
+                reqUpdate = window.requestAnimationFrame(update);
+            }
+        }
+        function isCollision(a, b) {
+            var aRect = a.getBoundingClientRect();
+            var bRect = b.getBoundingClientRect();
+            //console.log(aRect);
+            //console.log(bRect);
+            //console.log(aRect.top);
+            //console.log(aRect.height);
+            //console.log(aRect.left);
+            //console.log(aRect.width);
+            return !(((aRect.top + aRect.height) < bRect.top) || ((bRect.top + bRect.height) < aRect.top) || ((aRect.left + aRect.width) < bRect.left) || ((bRect.left + bRect.width) < aRect.left))
+        }
+        function move(e) {
+            document.querySelector('.crossInfo').innerHTML = 'X:' + (e.clientX - 50) + '- Y:' + (e.clientY - 50);
+            crossHair.style.left = (e.clientX - 100) + 'px';
+            crossHair.style.top = (e.clientY - 100) + 'px';
+        }
+    </script>
+</body>
+</html>
